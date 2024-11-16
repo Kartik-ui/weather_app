@@ -1,5 +1,6 @@
 import type { GeocodingResponse, WeatherData } from "@/api/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatTemp } from "@/lib/utils";
 import { ArrowDown, ArrowUp, Droplets, Wind } from "lucide-react";
 
 interface CurrentWeatherProps {
@@ -10,11 +11,9 @@ interface CurrentWeatherProps {
 const CurrentWeather = ({ data, locationName }: CurrentWeatherProps) => {
   const {
     weather: [currentWeather],
-    main: { temp, humidity, feels_like, pressure, temp_max, temp_min },
-    wind: { deg, speed },
+    main: { temp, humidity, feels_like, temp_max, temp_min },
+    wind: { speed },
   } = data;
-
-  const formatTemp = (temp: number) => `${Math.round(temp)}°C`;
 
   return (
     <Card className="overflow-hidden">

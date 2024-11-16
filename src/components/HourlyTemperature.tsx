@@ -16,7 +16,7 @@ interface HourlyTemperatureProps {
 
 const HourlyTemperature = ({ data }: HourlyTemperatureProps) => {
   const chartData = data.list.slice(0, 8).map((item) => ({
-    time: format(new Date(item.dt * 1000), "ha"),
+    time: format(new Date(item.dt * 1000), "HH"),
     temp: Math.round(item.main.temp),
     feelsLike: Math.round(item.main.feels_like),
   }));
@@ -46,7 +46,7 @@ const HourlyTemperature = ({ data }: HourlyTemperatureProps) => {
               />
               <Tooltip
                 content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
+                  if (active && payload && payload.length > 0) {
                     return (
                       <div className="rounded-lg border bg-background p-2 shadow-sm">
                         <div className="grid grid-cols-2 gap-2">
