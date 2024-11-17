@@ -8,10 +8,11 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { useFavorites } from "@/hooks/useFavorites";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { useLocationSearchQuery } from "@/hooks/useWeather";
 import { format } from "date-fns";
-import { Clock, Loader2, Search, XCircle } from "lucide-react";
+import { Clock, Loader2, Search, Star, XCircle } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -22,6 +23,8 @@ const CitySearch = () => {
 
   const { data: locations, isLoading } = useLocationSearchQuery(query);
   const { history, clearHistory, addToHistory } = useSearchHistory();
+
+  const { favorites } = useFavorites();
 
   const handleSelect = (cityData: string) => {
     const [lat, lon, name, state, country] = cityData.split("|");
@@ -62,9 +65,28 @@ const CitySearch = () => {
             <CommandEmpty>No cities found</CommandEmpty>
           )}
 
-          <CommandGroup heading="Favorites">
-            <CommandItem>Calculator</CommandItem>
-          </CommandGroup>
+          {favorites.length > 0 && (
+            <CommandGroup heading="Favorites">
+              {favorites.map((location) => (
+                <CommandItem
+                  key={location.id}
+                  value={`${location.lat}|${location.lon}|${location.name}|${location.state}|${location.country}`}
+                  onSelect={handleSelect}
+                >
+                  <Star className="mr-2 h-4 w-4 text-yellow-500" />
+                  <span>{location.name}</span>
+                  {location.state && (
+                    <span className="text-sm text-muted-foreground">
+                      , {location.state}
+                    </span>
+                  )}
+                  <span className="text-sm text-muted-foreground">
+                    , {location.country}
+                  </span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
 
           {history.length > 0 && (
             <>
