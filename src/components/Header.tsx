@@ -1,11 +1,25 @@
 import CitySearch from "@/components/CitySearch";
+import CustomSelect from "@/components/CustomSelect";
+import { temperatureOptions, timeOptions } from "@/constants/constants";
+import { PreferenceAction } from "@/context/Reducer";
 import { useTheme } from "@/context/ThemeProvider";
+import { usePreferences } from "@/context/usePreference";
 import { Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
+
+type PayloadType<T extends PreferenceAction["type"]> = Extract<
+  PreferenceAction,
+  { type: T }
+>["payload"];
 
 const Header = () => {
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
+
+  const {
+    state: { timeFormat, unit },
+    dispatch,
+  } = usePreferences();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur py-2 supports-[backdrop-filter]:bg-background/60">
@@ -20,6 +34,28 @@ const Header = () => {
 
         {/* remove the className to see magic */}
         <div className="flex gap-4">
+          <CustomSelect
+            placeholder="Time"
+            options={timeOptions}
+            value={timeFormat}
+            onChange={(value) =>
+              dispatch({
+                type: "SET_TIME_FORMAT",
+                payload: value as PayloadType<"SET_TIME_FORMAT">,
+              })
+            }
+          />
+          <CustomSelect
+            placeholder="Temperature"
+            options={temperatureOptions}
+            value={unit}
+            onChange={(value) =>
+              dispatch({
+                type: "SET_UNIT",
+                payload: value as PayloadType<"SET_UNIT">,
+              })
+            }
+          />
           <CitySearch />
           <div
             onClick={() => setTheme(isDark ? "light" : "dark")}

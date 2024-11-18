@@ -3,6 +3,7 @@ import {
   Coordinates,
   ForecastData,
   GeocodingResponse,
+  PreferencesState,
   WeatherData,
 } from "./types";
 
@@ -36,21 +37,29 @@ class WeatherAPI {
     }
   }
 
-  async getCurrentWeather({ lat, lon }: Coordinates): Promise<WeatherData> {
+  async getCurrentWeather(
+    { lat, lon }: Coordinates,
+    unit: PreferencesState["unit"]
+  ): Promise<WeatherData> {
     const url = this.createUrl(`${API_CONFIG.BASE_URL}/weather`, {
       lat: lat.toString(),
       lon: lon.toString(),
-      units: API_CONFIG.DEFAULT_PARAMS.units,
+      // units: API_CONFIG.DEFAULT_PARAMS.units,
+      units: unit,
     });
 
     return this.fetchData<WeatherData>(url);
   }
 
-  async getForecast({ lat, lon }: Coordinates): Promise<ForecastData> {
+  async getForecast(
+    { lat, lon }: Coordinates,
+    unit: PreferencesState["unit"]
+  ): Promise<ForecastData> {
     const url = this.createUrl(`${API_CONFIG.BASE_URL}/forecast`, {
       lat: lat.toString(),
       lon: lon.toString(),
-      units: API_CONFIG.DEFAULT_PARAMS.units,
+      // units: API_CONFIG.DEFAULT_PARAMS.units,
+      units: unit,
     });
 
     return this.fetchData<ForecastData>(url);

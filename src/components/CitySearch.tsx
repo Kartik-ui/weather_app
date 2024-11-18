@@ -8,6 +8,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import useDebounce from "@/hooks/useDebounce";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { useLocationSearchQuery } from "@/hooks/useWeather";
@@ -21,7 +22,9 @@ const CitySearch = () => {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
-  const { data: locations, isLoading } = useLocationSearchQuery(query);
+  const debouncedQuery = useDebounce(query, 800);
+
+  const { data: locations, isLoading } = useLocationSearchQuery(debouncedQuery);
   const { history, clearHistory, addToHistory } = useSearchHistory();
 
   const { favorites } = useFavorites();
@@ -31,7 +34,7 @@ const CitySearch = () => {
 
     //  add to search history
     addToHistory.mutate({
-      query,
+      query: debouncedQuery,
       name,
       country,
       lat: parseFloat(lat),
@@ -61,7 +64,7 @@ const CitySearch = () => {
           onValueChange={setQuery}
         />
         <CommandList>
-          {query.length > 2 && !isLoading && (
+          {debouncedQuery.length > 2 && !isLoading && (
             <CommandEmpty>No cities found</CommandEmpty>
           )}
 

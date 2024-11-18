@@ -1,27 +1,36 @@
-import { Coordinates } from "@/api/types";
+import { Coordinates, PreferencesState } from "@/api/types";
 import { weatherAPI } from "@/api/weather";
 import { useQuery } from "@tanstack/react-query";
 
 export const WEATHER_KEYS = {
-  weather: (coords: Coordinates) => ["weather", coords] as const,
-  forecast: (coords: Coordinates) => ["forecast", coords] as const,
+  weather: (coords: Coordinates, unit: PreferencesState["unit"]) =>
+    ["weather", coords, unit] as const,
+  forecast: (coords: Coordinates, unit: PreferencesState["unit"]) =>
+    ["forecast", coords, unit] as const,
   location: (coords: Coordinates) => ["location", coords] as const,
   search: (query: string) => ["locationSearch", query] as const,
 } as const;
 
-export const useWeatherQuery = (coordinates: Coordinates | null) => {
+export const useWeatherQuery = (
+  coordinates: Coordinates | null,
+  unit: PreferencesState["unit"]
+) => {
   return useQuery({
-    queryKey: WEATHER_KEYS.weather(coordinates ?? { lat: 0, lon: 0 }),
+    queryKey: WEATHER_KEYS.weather(coordinates ?? { lat: 0, lon: 0 }, unit),
     queryFn: () =>
-      coordinates ? weatherAPI.getCurrentWeather(coordinates) : null,
+      coordinates ? weatherAPI.getCurrentWeather(coordinates, unit) : null,
     enabled: !!coordinates,
   });
 };
 
-export const useForecastQuery = (coordinates: Coordinates | null) => {
+export const useForecastQuery = (
+  coordinates: Coordinates | null,
+  unit: PreferencesState["unit"]
+) => {
   return useQuery({
-    queryKey: WEATHER_KEYS.forecast(coordinates ?? { lat: 0, lon: 0 }),
-    queryFn: () => (coordinates ? weatherAPI.getForecast(coordinates) : null),
+    queryKey: WEATHER_KEYS.forecast(coordinates ?? { lat: 0, lon: 0 }, unit),
+    queryFn: () =>
+      coordinates ? weatherAPI.getForecast(coordinates, unit) : null,
     enabled: !!coordinates,
   });
 };

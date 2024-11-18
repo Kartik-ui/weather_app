@@ -6,6 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import WeatherDetails from "@/components/WeatherDetails";
 import WeatherForecast from "@/components/WeatherForecast";
+import { usePreferences } from "@/context/usePreference";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import {
   useForecastQuery,
@@ -22,8 +23,12 @@ const WeatherDashboard = () => {
     getLocation,
   } = useGeolocation();
 
-  const weatherQuery = useWeatherQuery(coordinates);
-  const forecastQuery = useForecastQuery(coordinates);
+  const {
+    state: { unit },
+  } = usePreferences();
+
+  const weatherQuery = useWeatherQuery(coordinates, unit);
+  const forecastQuery = useForecastQuery(coordinates, unit);
   const locationQuery = useReverseGeocodeQuery(coordinates);
 
   const handleRefresh = () => {

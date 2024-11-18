@@ -58,3 +58,10 @@ export interface ForecastData {
     sunset: number;
   };
 }
+
+// Context Types
+
+export interface PreferencesState {
+  timeFormat: "12-hour" | "24-hour";
+  unit: "standard" | "metric" | "imperial";
+}
