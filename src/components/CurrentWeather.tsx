@@ -1,5 +1,6 @@
 import type { GeocodingResponse, WeatherData } from "@/api/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { usePreferences } from "@/context/usePreference";
 import { formatTemp } from "@/lib/utils";
 import { ArrowDown, ArrowUp, Droplets, Wind } from "lucide-react";
 
@@ -9,6 +10,9 @@ interface CurrentWeatherProps {
 }
 
 const CurrentWeather = ({ data, locationName }: CurrentWeatherProps) => {
+  const {
+    state: { unit },
+  } = usePreferences();
   const {
     weather: [currentWeather],
     main: { temp, humidity, feels_like, temp_max, temp_min },
@@ -38,21 +42,21 @@ const CurrentWeather = ({ data, locationName }: CurrentWeatherProps) => {
 
             <div className="flex items-center gap-2">
               <p className="text-7xl font-bold tracking-tighter">
-                {formatTemp(temp)}
+                {formatTemp(temp, unit)}
               </p>
 
               <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">
-                  Feels like{formatTemp(feels_like)}
+                  Feels like {formatTemp(feels_like, unit)}
                 </p>
                 <div className="flex gap-2 text-sm font-medium">
                   <span className="flex items-center gap-1 text-blue-500">
                     <ArrowDown className="h-3 w-3" />
-                    {formatTemp(temp_min)}
+                    {formatTemp(temp_min, unit)}
                   </span>
                   <span className="flex items-center gap-1 text-red-500">
                     <ArrowUp className="h-3 w-3" />
-                    {formatTemp(temp_max)}
+                    {formatTemp(temp_max, unit)}
                   </span>
                 </div>
               </div>
@@ -63,7 +67,7 @@ const CurrentWeather = ({ data, locationName }: CurrentWeatherProps) => {
                 <Droplets className="h-4 w-4 text-blue-500" />
                 <div className="space-y-0.5">
                   <p className="text-sm font-medium">Humidity</p>
-                  <p className="text-sm text-muted-foreground">{humidity}%</p>
+                  <p className="text-sm text-muted-foreground">{humidity} %</p>
                 </div>
               </div>
 
@@ -71,7 +75,9 @@ const CurrentWeather = ({ data, locationName }: CurrentWeatherProps) => {
                 <Wind className="h-4 w-4 text-blue-500" />
                 <div className="space-y-0.5">
                   <p className="text-sm font-medium">Wind Speed</p>
-                  <p className="text-sm text-muted-foreground">{speed} m/s</p>
+                  <p className="text-sm text-muted-foreground">
+                    {unit === "imperial" ? `${speed} mph` : `${speed} m/s`}
+                  </p>
                 </div>
               </div>
             </div>

@@ -1,6 +1,9 @@
 import type { ForecastData } from "@/api/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePreferences } from "@/context/usePreference";
+import { correctTempUnits } from "@/lib/utils";
 import { format } from "date-fns";
+import { useMemo } from "react";
 import {
   Line,
   LineChart,
@@ -15,11 +18,57 @@ interface HourlyTemperatureProps {
 }
 
 const HourlyTemperature = ({ data }: HourlyTemperatureProps) => {
+  const {
+    state: { timeFormat, unit },
+  } = usePreferences();
+
+  const formatTime = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return timeFormat === "12-hour"
+      ? format(date, "hh:mm a")
+      : timeFormat === "24-hour"
+      ? format(date, "HH:mm")
+      : null;
+  };
+
   const chartData = data.list.slice(0, 8).map((item) => ({
-    time: format(new Date(item.dt * 1000), "HH"),
+    time: formatTime(item.dt),
     temp: Math.round(item.main.temp),
     feelsLike: Math.round(item.main.feels_like),
   }));
+
+  const yAxisDomain = useMemo(() => {
+    if (unit === "standard") {
+      const minTemp = Math.min(
+        ...chartData.map((item) => Math.min(item.temp, item.feelsLike))
+      );
+      const maxTemp = Math.max(
+        ...chartData.map((item) => Math.max(item.temp, item.feelsLike))
+      );
+      const padding = (maxTemp - minTemp) * 0.1; // 10% padding
+      return [Math.floor(minTemp - padding), Math.ceil(maxTemp + padding)];
+    }
+    return undefined; // default auto scaling for Celsius and Fahrenheit
+  }, [chartData, unit]);
+
+  // const { yAxisTicks, yAxisDomain } = useMemo(() => {
+  //   const temps = chartData.flatMap((item) => [item.temp, item.feelsLike]);
+  //   const minTemp = Math.min(...temps);
+  //   const maxTemp = Math.max(...temps);
+  //   const range = maxTemp - minTemp;
+  //   const step = Math.ceil(range / 4); // We want 5 ticks, so 4 intervals
+
+  //   const ticks = [];
+  //   const start = Math.floor(minTemp / step) * step; // Round down to nearest multiple of step
+  //   for (let i = 0; i < 5; i++) {
+  //     ticks.push(start + i * step);
+  //   }
+
+  //   return {
+  //     yAxisTicks: ticks,
+  //     yAxisDomain: [ticks[0], ticks[ticks.length - 1]],
+  //   };
+  // }, [chartData]);
 
   return (
     <Card className="flex-1">
@@ -42,7 +91,11 @@ const HourlyTemperature = ({ data }: HourlyTemperatureProps) => {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `${value}°C`}
+                domain={unit === "standard" ? yAxisDomain : undefined}
+                tickFormatter={(value) => {
+                  const formattedValue = correctTempUnits(value, unit);
+                  return formattedValue !== null ? formattedValue : "";
+                }}
               />
               <Tooltip
                 content={({ active, payload }) => {
@@ -55,7 +108,7 @@ const HourlyTemperature = ({ data }: HourlyTemperatureProps) => {
                               Temperature
                             </span>
                             <span className="font-bold">
-                              {payload[0].value}°C
+                              {correctTempUnits(payload?.[0].value, unit)}
                             </span>
                           </div>
                           <div className="flex flex-col">
@@ -63,7 +116,7 @@ const HourlyTemperature = ({ data }: HourlyTemperatureProps) => {
                               Feels Like
                             </span>
                             <span className="font-bold">
-                              {payload[1].value}°C
+                              {correctTempUnits(payload?.[1].value, unit)}
                             </span>
                           </div>
                         </div>

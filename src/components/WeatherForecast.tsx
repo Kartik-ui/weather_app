@@ -1,5 +1,6 @@
 import type { ForecastData } from "@/api/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePreferences } from "@/context/usePreference";
 import { formatTemp } from "@/lib/utils";
 import { format } from "date-fns";
 import { ArrowDown, ArrowUp, Droplets, Wind } from "lucide-react";
@@ -23,6 +24,10 @@ interface DailyForecast {
   date: number;
 }
 const WeatherForecast: React.FC<WeatherForecastProps> = ({ data }) => {
+  const {
+    state: { unit },
+  } = usePreferences();
+
   const dailyForecast = data.list.reduce((acc, forecast) => {
     const date = format(new Date(forecast.dt * 1000), "yyyy-MM-dd");
 
@@ -70,22 +75,26 @@ const WeatherForecast: React.FC<WeatherForecastProps> = ({ data }) => {
               <div className="flex justify-center gap-4">
                 <span className="flex items-center text-blue-500">
                   <ArrowDown className="mr-1 h-4 w-4" />
-                  {formatTemp(item.temp_min)}
+                  {formatTemp(item.temp_min, unit)}
                 </span>
                 <span className="flex items-center text-red-500">
                   <ArrowUp className="mr-1 h-4 w-4" />
-                  {formatTemp(item.temp_max)}
+                  {formatTemp(item.temp_max, unit)}
                 </span>
               </div>
 
               <div className="flex justify-end gap-4">
                 <span className="flex items-center gap-1">
                   <Droplets className="h-4 w-4 text-blue-500" />
-                  <span>{item.humidity}%</span>
+                  <span>{item.humidity} %</span>
                 </span>
                 <span className="flex items-center gap-1">
                   <Wind className="h-4 w-4 text-blue-500" />
-                  <span>{item.wind}m/s</span>
+                  <span>
+                    {unit === "imperial"
+                      ? `${item.wind} mph`
+                      : `${item.wind} m/s`}
+                  </span>
                 </span>
               </div>
             </div>

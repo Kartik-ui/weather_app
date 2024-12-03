@@ -1,5 +1,6 @@
 import type { WeatherData } from "@/api/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePreferences } from "@/context/usePreference";
 import { format } from "date-fns";
 import { Compass, Gauge, Sunrise, Sunset } from "lucide-react";
 
@@ -8,10 +9,18 @@ interface WeatherDetailsProps {
 }
 
 const WeatherDetails = ({ data }: WeatherDetailsProps) => {
+  const {
+    state: { timeFormat },
+  } = usePreferences();
   const { wind, main, sys } = data;
 
   const formatTime = (timestamp: number) => {
-    return format(new Date(timestamp * 1000), "HH:mm");
+    const date = new Date(timestamp * 1000);
+    return timeFormat === "12-hour"
+      ? format(date, "hh:mm a")
+      : timeFormat === "24-hour"
+      ? format(date, "HH:mm")
+      : null;
   };
 
   const getWindDirection = (degree: number) => {

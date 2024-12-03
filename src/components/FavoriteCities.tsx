@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { usePreferences } from "@/context/usePreference";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useWeatherQuery } from "@/hooks/useWeather";
+import { formatTemp } from "@/lib/utils";
 import { Loader2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -46,8 +48,11 @@ const FavoriteCityTablet = ({
   country,
   onRemove,
 }: FavoriteCityTabletProps) => {
+  const {
+    state: { unit },
+  } = usePreferences();
   const navigate = useNavigate();
-  const { data: weatherData, isLoading } = useWeatherQuery({ lat, lon });
+  const { data: weatherData, isLoading } = useWeatherQuery({ lat, lon }, unit);
 
   return (
     <div
@@ -93,7 +98,7 @@ const FavoriteCityTablet = ({
           </div>
           <div className="text-right ml-auto">
             <p className="text-xl font-bold">
-              {Math.round(weatherData.main.temp)}°C
+              {formatTemp(weatherData.main.temp, unit)}
             </p>
             <p className="text-sx capitalize text-muted-foreground">
               {weatherData.weather[0].description}
