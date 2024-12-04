@@ -23,6 +23,7 @@ interface DailyForecast {
   };
   date: number;
 }
+
 const WeatherForecast: React.FC<WeatherForecastProps> = ({ data }) => {
   const {
     state: { unit },
@@ -56,12 +57,12 @@ const WeatherForecast: React.FC<WeatherForecastProps> = ({ data }) => {
       <CardHeader>
         <CardTitle>Days Forecast</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="max-md:p-2">
         <div className="grid gap-4">
           {nextDays.map((item) => (
             <div
               key={item.date}
-              className="grid grid-cols-3 gap-4 items-center rounded-lg border p-4"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center rounded-lg border p-4"
             >
               <div>
                 <p className="font-medium">
@@ -72,7 +73,7 @@ const WeatherForecast: React.FC<WeatherForecastProps> = ({ data }) => {
                 </p>
               </div>
 
-              <div className="flex justify-center gap-4">
+              <div className="flex justify-start sm:justify-center gap-4">
                 <span className="flex items-center text-blue-500">
                   <ArrowDown className="mr-1 h-4 w-4" />
                   {formatTemp(item.temp_min, unit)}
@@ -83,7 +84,7 @@ const WeatherForecast: React.FC<WeatherForecastProps> = ({ data }) => {
                 </span>
               </div>
 
-              <div className="flex justify-end gap-4">
+              <div className="flex justify-start sm:justify-end gap-4">
                 <span className="flex items-center gap-1">
                   <Droplets className="h-4 w-4 text-blue-500" />
                   <span>{item.humidity} %</span>

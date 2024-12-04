@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { usePreferences } from "@/context/usePreference";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useWeatherQuery } from "@/hooks/useWeather";
@@ -35,6 +35,7 @@ const FavoriteCities = () => {
             />
           ))}
         </div>
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </>
   );
@@ -61,7 +62,7 @@ const FavoriteCityTablet = ({
       }
       role="button"
       tabIndex={0}
-      className="relative flex min-w-[12.5rem] cursor-pointer items-center gap-3 rounded-lg border bg-card p-4 pr-8
+      className="relative flex min-w-[12.5rem] sm:min-w-[15rem] md:min-w-[18rem] cursor-pointer items-center gap-3 rounded-lg border bg-card p-4 pr-8
       shadow-sm transition-all hover:shadow-md"
     >
       <Button
@@ -100,7 +101,7 @@ const FavoriteCityTablet = ({
             <p className="text-xl font-bold">
               {formatTemp(weatherData.main.temp, unit)}
             </p>
-            <p className="text-sx capitalize text-muted-foreground">
+            <p className="text-xs capitalize text-muted-foreground">
               {weatherData.weather[0].description}
             </p>
           </div>
