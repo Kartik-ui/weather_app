@@ -6,8 +6,9 @@ import { useTheme } from "@/context/ThemeProvider";
 import { usePreferences } from "@/context/usePreference";
 import { Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
+import MobileNav from "./MobileNav";
 
-type PayloadType<T extends PreferenceAction["type"]> = Extract<
+export type PayloadType<T extends PreferenceAction["type"]> = Extract<
   PreferenceAction,
   { type: T }
 >["payload"];
@@ -32,8 +33,10 @@ const Header = () => {
           />
         </Link>
 
+        <MobileNav setTheme={setTheme} isDark={isDark} />
+
         {/* remove the className to see magic */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 max-md:hidden">
           <CustomSelect
             placeholder="Time"
             options={timeOptions}
